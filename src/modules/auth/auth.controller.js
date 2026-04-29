@@ -1,35 +1,47 @@
-const { loginService, registerService } = require("../auth/auth.service");
+const { loginService, registerOwnerService } = require("../auth/auth.service");
 
-const register = async(req, res) => {
+const registerOwner = async(req, res) => {
     try {
-        const { id_empresa, nombre, email, password, rol } = req.body;
+        const { id_empresa, nombre, email, password } = req.body;
 
-        //Validación básica
-        if (!id_empresa || !nombre || !email || !password || !rol) {
+        if (!id_empresa || !nombre || !email || !password) {
             return res.status(400).json({
+                success: false,
                 message: "Todos los campos son obligatorios",
             });
         }
 
-        const result = await registerService(
+        const newUser = await registerOwnerService(
             id_empresa,
             nombre,
             email,
             password,
-            rol,
         );
 
         return res.status(201).json({
-            message: "Usuario registrado correctamente",
-            user: result,
+            success: true,
+            message: "Usuario dueño creado correctamente",
+            user: newUser,
         });
     } catch (error) {
         if (error.message === "EMAIL_YA_EXISTE") {
-            return res.status(409).json({ message: "El email ya está registrado" });
+            return res.status(409).json({
+                success: false,
+                message: "Correo ya registrado",
+            });
         }
 
+        if (error.message === "EMAIL_INVALIDO") {
+            return res.status(400).json({
+                success: false,
+                message: "Correo inválido",
+            });
+        }
         console.error(error);
-        return res.status(500).json({ message: "Error interno del servidor" });
+        return res.status(500).json({
+            success: false,
+            message: "Error interno del servidor",
+        });
     }
 };
 
@@ -67,5 +79,5 @@ const login = async(req, res) => {
 
 module.exports = {
     login,
-    register,
+    registerOwner,
 };
