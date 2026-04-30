@@ -7,6 +7,12 @@ const empresaRoutes = require("./modules/empresa/empresa.routes");
 const servicioRoutes = require("./modules/servicio/servicio.routes");
 const errorHandler = require("./modules/middlewares/errorHandler");
 
+app.use(
+  cors({
+    origin: "http://localhost:3001",
+  }),
+);
+
 app.use(express.json());
 
 // prefijos API
